@@ -2,8 +2,8 @@
 import ProjectDescription
 
 extension ConfigurationName {
-  /// The configuration `make screenshots` builds. Named plainly: the gate is
-  /// SCREENSHOTS on the app target, not DEBUG in the packages.
+  /// The configuration `make screenshots` builds. Its packages get Release
+  /// settings (no DEBUG), so screenshot code never sits behind #if DEBUG.
   public static var screenshots: Self {
     .configuration("Screenshots")
   }

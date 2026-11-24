@@ -16,14 +16,13 @@ extension SettingsDictionary {
 
 extension Configuration {
   /// The app target's Screenshots configuration: Debug-based, the
-  /// .Screenshots bundle ID, ad hoc, the SCREENSHOTS condition, and an
-  /// entitlements file with only profile-free entitlements.
+  /// .Screenshots bundle ID (the only one that can start screenshot mode),
+  /// ad hoc, and an entitlements file with only profile-free entitlements.
   public static var appScreenshots: Self {
     .debug(
       name: .screenshots,
       settings: SettingsDictionary.signingAdHoc.merging([
         "PRODUCT_BUNDLE_IDENTIFIER": "com.example.MyApp.Screenshots",
-        "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "$(inherited) DEBUG SCREENSHOTS",
         // Only when the app has entitlements that need a profile; an app
         // with only profile-free ones (App Sandbox) keeps its own.
         "CODE_SIGN_ENTITLEMENTS": "Config/Screenshots.entitlements",
