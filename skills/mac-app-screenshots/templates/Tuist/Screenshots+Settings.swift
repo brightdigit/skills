@@ -24,6 +24,8 @@ extension Configuration {
       settings: SettingsDictionary.signingAdHoc.merging([
         "PRODUCT_BUNDLE_IDENTIFIER": "com.example.MyApp.Screenshots",
         "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "$(inherited) DEBUG SCREENSHOTS",
+        // Only when the app has entitlements that need a profile; an app
+        // with only profile-free ones (App Sandbox) keeps its own.
         "CODE_SIGN_ENTITLEMENTS": "Config/Screenshots.entitlements",
       ]) { $1 },
       xcconfig: .relativeToRoot("Config/App.xcconfig")

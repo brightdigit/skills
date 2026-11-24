@@ -8,9 +8,9 @@ GRABKIT            := Packages/GrabKit
 SCREENSHOT_APPEARANCES ?= light dark
 
 .PHONY: screenshots
-# Depends on a generate target without lint: a lint build phase must not
-# rewrite sources mid-capture.
-screenshots: generate-no-lint
+# If the project has a lint build phase, depend on a generate target that
+# leaves it out: it must not rewrite sources mid-capture.
+screenshots: generate
 	@if [ "$$(defaults read com.apple.WindowManager GloballyEnabled 2>/dev/null)" = 1 ]; then \
 		echo "⚠️  Stage Manager is on: windows may be scaled or moved in the shots."; fi
 	@if pgrep -xq "Problem Reporter"; then \
@@ -28,4 +28,5 @@ screenshots: generate-no-lint
 		status=$$?; \
 		swift run --package-path $(GRABKIT) -c release grab-export \
 			$(SCREENSHOTS_RESULT) $(SCREENSHOTS_OUTPUT) || true; \
+		if [ "$(OPEN)" != 0 ] && [ -d $(SCREENSHOTS_OUTPUT) ]; then open $(SCREENSHOTS_OUTPUT); fi; \
 		exit $$status
