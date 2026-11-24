@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Config/Screenshots.entitlements: only entitlements that need no
+     provisioning profile. Screenshot mode fakes every service behind a
+     restricted one (iCloud, keychain groups, push, app groups). -->
+<plist version="1.0">
+<dict>
+	<key>com.apple.security.app-sandbox</key>
+	<true/>
+</dict>
+</plist>

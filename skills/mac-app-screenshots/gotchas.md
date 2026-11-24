@@ -1,0 +1,17 @@
+# Gotchas
+
+Each of these happened on a real run of Stewed, Mistico or TesserClip.
+
+- **Packages lose `DEBUG` in a custom configuration.** In a configuration whose name doesn't contain "Debug", Xcode builds local packages with Release settings (`-O`, no `-DDEBUG`), even when Tuist declares it `.debug(name:)`. TesserClip's `#if DEBUG` screenshot mode was compiled out and the app quit at launch. Gate with `#if SCREENSHOTS` on the app target.
+- **Restricted entitlements need a profile.** iCloud, keychain groups, push and app groups work only with a provisioning profile for that exact bundle ID, and an ad hoc build has none. Fake the service instead.
+- **`XCUIApplication.launch()` kills the running app** with the same bundle ID. That is one reason for the `.Screenshots` ID.
+- **A locked screen** launches the app as "Running Background", and the test fails after 60 s with "Failed to activate application". The result bundle's screen recording shows the lock screen.
+- **Stage Manager** scales windows (0.9 seen). `GrabRunner` notes a window that isn't the expected size.
+- **Killing a hung run** leaves "quit unexpectedly" dialogs that show in later shots. `GrabRunner` refuses to capture while one is open.
+- **Switching appearance stalls** when another busy app is frontmost: XCTest waits for the frontmost app to idle. `GrabRunner` switches while the app under test is still frontmost.
+- **Sheets and menus** can be missed by `window.screenshot()`. Return them as `GrabTarget.extras`, which crops a screen capture to the union of frames. An open menu's own frame can run to the bottom of the screen, so pass the menu bar title instead.
+- **SwiftLint's `empty_count` autocorrect** turns `query.count == 0` into `.isEmpty`, which `XCUIElementQuery` lacks. Use `firstMatch.exists`.
+- **Pop-up menus and menu bar items share titles.** Search the pop-up's own menu, not the app's menu bar.
+- **XCUI waits ~10 s for the app to idle** after each pop-up pick, so screens with several picks take minutes per appearance.
+- **SwiftUI accessibility can recurse.** Mistico's References panel crashed under XCUI with a stack overflow in `AccessibilityNode.accessibilityLabel`. When one screen crashes the app, read its `.ips` crash report before blaming the runner.
+- **A bare flag swallows the next argument.** AppKit reads `-Key value` pairs, so every flag carries a value.

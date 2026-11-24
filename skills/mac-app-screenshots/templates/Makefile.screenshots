@@ -1,0 +1,31 @@
+# Website screenshots. A headed UI test: it takes over the screen and switches
+# the Mac's appearance while it runs. Never run by CI.
+SCREENSHOTS_RESULT := build/screenshots.xcresult
+SCREENSHOTS_OUTPUT := build/screenshots
+# GrabKit's checkout: the subrepo, or the one SwiftPM resolved.
+GRABKIT            := Packages/GrabKit
+# Which appearances to capture: "light dark" (default), "light" or "dark".
+SCREENSHOT_APPEARANCES ?= light dark
+
+.PHONY: screenshots
+# Depends on a generate target without lint: a lint build phase must not
+# rewrite sources mid-capture.
+screenshots: generate-no-lint
+	@if [ "$$(defaults read com.apple.WindowManager GloballyEnabled 2>/dev/null)" = 1 ]; then \
+		echo "⚠️  Stage Manager is on: windows may be scaled or moved in the shots."; fi
+	@if pgrep -xq "Problem Reporter"; then \
+		echo "⚠️  A 'quit unexpectedly' dialog is open: dismiss it or it shows in the shots."; fi
+	rm -rf $(SCREENSHOTS_RESULT)
+	mkdir -p build
+	TEST_RUNNER_MY_SCREENSHOT_APPEARANCES="$(SCREENSHOT_APPEARANCES)" xcodebuild \
+		-workspace MyApp.xcworkspace \
+		-scheme MyAppScreenshots \
+		-configuration Screenshots \
+		-destination 'platform=macOS' \
+		-derivedDataPath build/DerivedData \
+		-resultBundlePath $(SCREENSHOTS_RESULT) \
+		test; \
+		status=$$?; \
+		swift run --package-path $(GRABKIT) -c release grab-export \
+			$(SCREENSHOTS_RESULT) $(SCREENSHOTS_OUTPUT) || true; \
+		exit $$status

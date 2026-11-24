@@ -1,0 +1,25 @@
+name: Skills
+
+# Pull requests only: a PR's commits never run twice.
+on:
+  pull_request:
+
+jobs:
+  check:
+    name: Frontmatter and links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Every skill has a name and description
+        run: |
+          status=0
+          for skill in skills/*/SKILL.md; do
+            head -n 5 "$skill" | grep -q '^name: ' || { echo "$skill: no name"; status=1; }
+            head -n 5 "$skill" | grep -q '^description: ' || { echo "$skill: no description"; status=1; }
+          done
+          exit $status
+      - name: Relative links resolve
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --offline --no-progress './**/*.md'
+          fail: true
