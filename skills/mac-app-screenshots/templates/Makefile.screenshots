@@ -5,6 +5,9 @@ SCREENSHOTS_OUTPUT := build/screenshots
 # The app package that depends on GrabKit (a URL dependency): `swift run`
 # builds grab-export from the GrabKit checkout it resolved.
 GRABKIT_HOST       := Packages/MyApp
+# grab-export empties SCREENSHOTS_OUTPUT first. For a folder that also holds
+# other shots (Stewed's Marketing/Screenshots/), pass --keep-others before the
+# paths: it replaces only the files the run exports.
 # Which appearances to capture: "light dark" (default), "light" or "dark".
 SCREENSHOT_APPEARANCES ?= light dark
 
