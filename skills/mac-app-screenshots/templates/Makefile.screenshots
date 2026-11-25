@@ -2,8 +2,9 @@
 # the Mac's appearance while it runs. Never run by CI.
 SCREENSHOTS_RESULT := build/screenshots.xcresult
 SCREENSHOTS_OUTPUT := build/screenshots
-# GrabKit's checkout: the subrepo, or the one SwiftPM resolved.
-GRABKIT            := Packages/GrabKit
+# The app package that depends on GrabKit (a URL dependency): `swift run`
+# builds grab-export from the GrabKit checkout it resolved.
+GRABKIT_HOST       := Packages/MyApp
 # Which appearances to capture: "light dark" (default), "light" or "dark".
 SCREENSHOT_APPEARANCES ?= light dark
 
@@ -26,7 +27,7 @@ screenshots: generate
 		-resultBundlePath $(SCREENSHOTS_RESULT) \
 		test; \
 		status=$$?; \
-		swift run --package-path $(GRABKIT) -c release grab-export \
+		swift run --package-path $(GRABKIT_HOST) -c release grab-export \
 			$(SCREENSHOTS_RESULT) $(SCREENSHOTS_OUTPUT) || true; \
 		if [ "$(OPEN)" != 0 ] && [ -d $(SCREENSHOTS_OUTPUT) ]; then open $(SCREENSHOTS_OUTPUT); fi; \
 		exit $$status
